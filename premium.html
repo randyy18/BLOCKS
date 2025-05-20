@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blocks - Kids Video App</title>
+    <link rel="stylesheet" href="premium.css">
+</head>
+<body>
+    <div id="floatingShapesContainer"></div>
+
+    <header>
+        <h1>Blocks <span id="activeProfileDisplay" class="hidden"></span></h1>
+        <div id="screenTimeDisplay" class="hidden">
+            <span>Time Left: </span>
+            <span id="timeLeftValue">--:--</span>
+        </div>
+        <div>
+            <button id="freeFeaturesBtn">Free Features</button>
+            <button id="parentalModeBtn">Parental Mode</button>
+        </div>
+    </header>
+
+    <main>
+        <div id="videoPlayerContainer">
+            <p id="instructions">Select a video below to start watching!</p>
+            <div id="screenTimeLock" class="hidden">
+                <div class="lock-icon">⏰</div>
+                <h2 id="lockScreenTitle">Screen Time Limit Reached!</h2>
+                <p id="lockScreenMessage">Time for a break! Please ask a parent to unlock more time.</p>
+            </div>
+        </div>
+
+        <div id="filtersContainer">
+            <label for="categoryFilter">Filter by Category:</label>
+            <select id="categoryFilter">
+                <option value="all">All Categories</option>
+            </select>
+        </div>
+
+        <div id="goalStatusContainer" class="hidden">
+            <p id="goalProgressText"></p>
+            <p id="goalCompleteText" class="hidden"></p>
+        </div>
+
+        <div id="goalRewardDisplay" class="hidden">
+           <p id="goalRewardText"></p>
+        </div>
+
+        <div id="videoThumbnailGrid"></div>
+    </main>
+
+    <div id="parentalControlsModal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-btn">×</span>
+            <h2>Parental Controls</h2>
+            <div id="passwordSection">
+                <label for="passwordInput">Enter Password:</label>
+                <input type="password" id="passwordInput" placeholder="Default: 1234">
+                <button id="submitPasswordBtn">Unlock</button>
+                <p id="passwordError" class="error-message"></p>
+            </div>
+
+            <div id="settingsSection" class="hidden">
+                <div style="text-align: center; margin-bottom: 1.5rem;">
+                    <button id="togglePremiumBtn">Activate Premium Features</button>
+                    <p id="premiumStatusText" style="font-size: 0.9em; color: var(--text-secondary); margin-top: 5px;"></p>
+                </div>
+                <hr>
+
+                <div class="premium-only-setting setting-group">
+                    <h3>Manage Child Profiles</h3>
+                    <div class="premium-placeholder" style="flex-direction: column; align-items: flex-start;">
+                        <h4>Multiple Child Profiles</h4>
+                        <label for="profileNameInput">New Profile Name:</label>
+                        <input type="text" id="profileNameInput" placeholder="E.g., Alex, Bella">
+                        <button id="addProfileBtn">Add Profile</button>
+                        <div id="profileSelectionArea">
+                            <label for="activeProfileSelect" style="margin-top:10px;">Switch Active Profile:</label>
+                            <select id="activeProfileSelect"></select>
+                            <button id="deleteProfileBtn" class="warning-btn" style="margin-left: 5px;">Delete Selected Profile</button>
+                        </div>
+                        <p id="profileMessage" class="info-text"></p>
+                    </div>
+                </div>
+                <hr class="premium-only-setting">
+
+
+                <h3>Manage Videos (for <span class="current-profile-name-parental">Active Profile</span>)</h3>
+                <input type="text" id="videoUrlInput" placeholder="Enter YouTube Video URL or ID">
+                <label for="videoCategoryInput">Category:</label>
+                <select id="videoCategoryInput">
+                    <option value="general">General</option>
+                    <option value="stories">Stories</option>
+                    <option value="songs">Songs</option>
+                    <option value="education">Education</option>
+                    <option value="entertainment">Entertainment</option>
+                </select>
+                <div class="premium-only-setting" style="padding-top: 5px; padding-bottom: 0;">
+                     <label for="videoChannelNameInput">Channel Name (Optional, for blocking feature):</label>
+                     <input type="text" id="videoChannelNameInput" placeholder="e.g., Blippi, Cocomelon">
+                </div>
+                <button id="addVideoBtn">Add Video</button>
+                <p id="videoAddError" class="error-message"></p>
+                <div id="currentVideosList">
+                    <h4>Current Videos (<span class="current-profile-name-parental">Active Profile</span>):</h4>
+                    <ul></ul>
+                </div>
+                <hr>
+
+                <h3>Settings (for <span class="current-profile-name-parental">Active Profile</span>)</h3>
+                <label for="screenTimeLimitInput">Daily Screen Time Limit (minutes, 0 for unlimited):</label>
+                <input type="number" id="screenTimeLimitInput" min="0" value="60">
+                <button id="resetScreenTimeBtn" style="margin-top: 10px; margin-bottom: 5px;">Reset Today's Screen Time</button>
+                <p id="screenTimeResetMessage" class="success-message hidden" style="margin-top: 5px;"></p>
+                <hr>
+
+                <h3>Goal Setting (for <span class="current-profile-name-parental">Active Profile</span>)</h3>
+                <label for="goalVideosCountInput">Number of videos to watch for daily goal:</label>
+                <input type="number" id="goalVideosCountInput" min="0" value="3">
+                <div class="premium-only-setting setting-group">
+                    <label for="customRewardInput">Custom Reward Text (Premium):</label>
+                    <input type="text" id="customRewardInput" placeholder="e.g., Extra bedtime story!">
+                </div>
+                <button id="setGoalBtn">Set/Update Goal</button>
+                <p id="goalSetMessage" class="success-message hidden"></p>
+                <hr>
+
+                <h3>Manage Category Visibility (for <span class="current-profile-name-parental">Active Profile</span>)</h3>
+                <div id="categoryVisibilityControls"></div>
+                <p class="info-text">Uncheck categories to hide them from the child's view.</p>
+                <hr>
+
+                <div class="premium-feature-title premium-only-setting">🌟 Premium Features (for <span class="current-profile-name-parental">Active Profile</span>) 🌟</div>
+
+                <div class="premium-only-setting setting-group">
+                    <h3>Enhanced Content Control</h3>
+                    <label for="blockedKeywordsInput">Block Videos with Keywords in Title (comma-separated):</label>
+                    <input type="text" id="blockedKeywordsInput" placeholder="e.g., scary, monster, unboxing">
+                    <p class="info-text">Helps filter out unwanted themes.</p>
+                    
+                    <div class="premium-placeholder">
+                        <h4>Personalized Content Suggestions</h4>
+                        <p class="info-text" style="margin-top: 5px; margin-bottom:0;">Suggestions are based on watched categories and applied automatically.</p>
+                    </div>
+
+                    <div class="premium-placeholder" style="flex-direction: column; align-items: flex-start;">
+                        <h4>Block Specific Creators (by Channel Name)</h4>
+                        <label for="blockedChannelNamesInput">Block Videos from Channel Names (comma-separated):</label>
+                        <input type="text" id="blockedChannelNamesInput" placeholder="e.g., BadChannel, Unwanted Show">
+                        <p class="info-text" style="margin-top:5px; margin-bottom:0;">Add channel names when adding videos. Matches are case-insensitive.</p>
+                    </div>
+
+                    <div class="premium-placeholder" style="flex-direction: column; align-items: flex-start;">
+                        <h4>Detailed Content History</h4>
+                        <div id="contentHistoryDisplay">
+                            <p>No viewing history yet for this profile.</p>
+                            <ul></ul>
+                        </div>
+                        <button id="clearHistoryBtn" style="margin-top: 5px;" class="warning-btn small-btn">Clear History for Profile</button>
+                    </div>
+                </div>
+                <hr class="premium-only-setting">
+
+                <div class="premium-only-setting setting-group">
+                    <h3>Advanced Goal Setting & Gamification</h3>
+                    <div class="premium-placeholder" style="flex-direction: column; align-items: flex-start;">
+                        <h4>Weekly Learning Milestones</h4>
+                        <label for="weeklyMilestoneTargetInput">Educational Videos per Week Target:</label>
+                        <input type="number" id="weeklyMilestoneTargetInput" min="0" value="5">
+                        <label for="educationalCategoriesInput">Educational Categories (comma-separated, e.g., education,songs):</label>
+                        <input type="text" id="educationalCategoriesInput" placeholder="education, songs">
+                        <p id="weeklyMilestoneProgressText">Weekly Progress: 0/0</p>
+                        <p class="info-text" style="margin-top:5px; margin-bottom:0;">Progress resets every Sunday.</p>
+                    </div>
+                </div>
+                <hr class="premium-only-setting">
+
+                <div class="premium-only-setting setting-group">
+                    <h3>Premium Parental Controls</h3>
+                    <label for="accessScheduleStart">Schedule Screen Access (Daily):</label>
+                    <div class="time-schedule-inputs">
+                        <span>Start: <input type="time" id="accessScheduleStart"></span>
+                        <span>End: <input type="time" id="accessScheduleEnd"></span>
+                    </div>
+                    <p class="info-text">Basic daily schedule. Time is in 24-hour format.</p>
+                    
+                    <div class="premium-action-item">
+                        <button id="immediateLockoutBtn" class="warning-btn">Immediate Lockout Now (for Active Profile)</button>
+                    </div>
+
+                    <div class="premium-placeholder" style="flex-direction: column; align-items: flex-start;">
+                         <h4>Real-time Screen Monitoring</h4>
+                        <p id="realTimeStatusText">Currently Watching: (Nothing) | Time Left: --:--</p>
+                    </div>
+
+                    <div class="premium-placeholder" style="flex-direction: column; align-items: flex-start;">
+                        <h4>Weekly Wrap Reports</h4>
+                        <div id="weeklyReportDisplay">
+                            <p>No report data available yet. Check back after a week of activity.</p>
+                        </div>
+                        <button id="generateReportBtn" style="margin-top:5px;">Generate/Refresh Report</button>
+                    </div>
+                </div>
+                <hr class="premium-only-setting">
+                
+                <h3>Global Settings</h3>
+                <label for="newPasswordInput" style="margin-top: 1.5rem;">Set New Parental Password (optional):</label>
+                <input type="password" id="newPasswordInput" placeholder="Leave blank to keep current">
+                <button id="saveSettingsBtn">Save All Settings & Lock</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="premium.js"></script>
+</body>
+</html>
